@@ -1,7 +1,13 @@
 package com.richard.learn.hello;
 
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,16 +19,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @todo TODO
  */
 @Controller
-@EnableAutoConfiguration
+@SpringBootApplication // same as  @Configuration @EnableAutoConfiguration @ComponentScan
 public class SampleController {
 
-	@RequestMapping("/")
+	public static void main(String[] args) {
+		//SpringApplication.run(SampleController.class, args);
+		SpringApplication app = new SpringApplication(SampleController.class);
+		app.setBannerMode(Banner.Mode.OFF);
+		app.run(args);
+	}
+	
+	@RequestMapping("/index")
 	@ResponseBody
 	private String home() {
 		return "Hello world";
 	}
 	
-	public static void main(String[] args) {
-		SpringApplication.run(SampleController.class, args);
+	@Bean
+	public EmbeddedServletContainerFactory servletContainer() {
+		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+		tomcat.setPort(8098);
+		tomcat.setSessionTimeout(30, TimeUnit.MINUTES);
+		return tomcat;
 	}
 }
