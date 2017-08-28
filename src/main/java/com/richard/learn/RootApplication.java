@@ -1,44 +1,38 @@
-package com.richard.learn.hello;
+package com.richard.learn;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.richard.learn.component.AppConfig;
 
 /**
- * @author YaoXiansheng
- * @date 2017年8月27日
- * @title SampleController
- * @todo TODO
- */
-@Controller
+* @author RichardYao richardyao@tvunetworks.com
+* @date 2017年8月28日 下午4:40:18
+* ComponentScan的自动扫描只能扫描当前根目录及其子文件
+*/
 @SpringBootApplication // same as  @Configuration @EnableAutoConfiguration @ComponentScan
-public class SampleController {
-
+public class RootApplication {
+	
+	@Autowired
+	private AppConfig appConfig;
+	
 	public static void main(String[] args) {
-		//SpringApplication.run(SampleController.class, args);
-		SpringApplication app = new SpringApplication(SampleController.class);
+		SpringApplication app = new SpringApplication(RootApplication.class);
 		app.setBannerMode(Banner.Mode.OFF);
 		app.run(args);
-	}
-	
-	@RequestMapping("/index")
-	@ResponseBody
-	private String home() {
-		return "Hello world";
 	}
 	
 	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
 		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
-		tomcat.setPort(8098);
+		tomcat.setPort(appConfig.getTomcatPort());
 		tomcat.setSessionTimeout(30, TimeUnit.MINUTES);
 		return tomcat;
 	}
